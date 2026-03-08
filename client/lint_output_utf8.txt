@@ -1,0 +1,51 @@
+﻿
+> client@0.0.0 lint
+> eslint .
+
+
+C:\Users\aswin\.gemini\antigravity\scratch\destination-app\client\src\context\AuthContext.jsx
+   3:14  error  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-refresh/only-export-components
+  13:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  11 |         const storedUser = localStorage.getItem('userInfo');
+  12 |         if (storedUser) {
+> 13 |             setUser(JSON.parse(storedUser));
+     |             ^^^^^^^ Avoid calling setState() directly within an effect
+  14 |         }
+  15 |         setLoading(false);
+  16 |     }, []);  react-hooks/set-state-in-effect
+
+C:\Users\aswin\.gemini\antigravity\scratch\destination-app\client\src\pages\Dashboard.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\aswin\.gemini\antigravity\scratch\destination-app\client\src\pages\Home.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\aswin\.gemini\antigravity\scratch\destination-app\client\src\pages\Login.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\aswin\.gemini\antigravity\scratch\destination-app\client\src\pages\RideTracking.jsx
+   3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  68:74  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+  66 |                     </div>
+  67 |                     <h2 className="text-3xl font-extrabold text-slate-900 mb-1">{eta} <span className="text-lg font-medium text-slate-500">mins away</span></h2>
+> 68 |                     <p className="text-slate-500 text-sm">ETA: {new Date(Date.now() + eta * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+     |                                                                          ^^^^^^^^^^ Cannot call impure function
+  69 |                 </div>
+  70 |
+  71 |                 {/* AI Alerts */}  react-hooks/purity
+
+C:\Users\aswin\.gemini\antigravity\scratch\destination-app\client\src\pages\SearchRide.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+✖ 8 problems (8 errors, 0 warnings)
+
