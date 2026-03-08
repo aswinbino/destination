@@ -7,6 +7,7 @@ import SearchRide from './pages/SearchRide';
 import PostRide from './pages/PostRide';
 import RideTracking from './pages/RideTracking';
 import AdminDashboard from './pages/AdminDashboard';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/post" element={<PostRide />} />
             <Route path="/track/:rideId" element={<RideTracking />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
       </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
-import { Car, MapPin, User, Shield, CreditCard, Leaf, Plus } from 'lucide-react';
+import { Car, MapPin, User, Shield, CreditCard, Leaf, Plus, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import RideCard from '../components/RideCard';
 import BookingModal from '../components/BookingModal';
@@ -15,9 +15,31 @@ const mockActiveRide = {
     price: '₹45'
 };
 
+const mockRecentRides = [
+    {
+        id: 'h1',
+        driver: { name: 'Arjun K.', trustScore: 94, vehicle: 'Honda City', organization: 'Anna University' },
+        status: 'completed',
+        startLocation: 'Velachery',
+        endLocation: 'Taramani',
+        time: 'Yesterday, 05:00 PM',
+        price: '₹40'
+    },
+    {
+        id: 'h2',
+        driver: { name: 'Deepa R.', trustScore: 91, vehicle: 'Hyundai i20', organization: 'IIT Madras' },
+        status: 'completed',
+        startLocation: 'Adyar',
+        endLocation: 'Siruseri IT Park',
+        time: 'Mon, 07:00 PM',
+        price: '₹55'
+    }
+];
+
 const Dashboard = () => {
     const [role, setRole] = useState('passenger');
     const [bookingOpen, setBookingOpen] = useState(false);
+    const [isRideActive, setIsRideActive] = useState(false); // Controlled by app state logic normally
 
     // Animated CO2 Counter logic
     const count = useMotionValue(0);
@@ -56,43 +78,56 @@ const Dashboard = () => {
                     {/* Main Content Area */}
                     <div className="lg:col-span-2 space-y-8">
 
-                        {/* Active Ride Banner */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-gradient-to-r from-primary-600 to-emerald-500 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden"
-                        >
-                            <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
-                                <Car size={200} />
-                            </div>
-
-                            <div className="relative z-10">
-                                <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase backdrop-blur-sm mb-4 inline-block">
-                                    Active Ride
-                                </span>
-                                <h2 className="text-3xl font-bold mb-2">Heading to Taramani</h2>
-                                <p className="opacity-90 flex items-center gap-2 mb-6">
-                                    <MapPin size={16} /> Pickup in 15 mins
-                                </p>
-
-                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between border border-white/20">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary-600 font-bold text-lg">
-                                            PS
-                                        </div>
-                                        <div>
-                                            <div className="font-semibold">{role === 'passenger' ? 'Driven by Priya S.' : 'Passenger: Rahul M.'}</div>
-                                            <div className="text-sm opacity-80">{role === 'passenger' ? 'Trust Score: 98/100' : 'Payment Verified'}</div>
-                                        </div>
-                                    </div>
-                                    <Link to="/track/r1">
-                                        <button className="px-6 py-2 bg-white text-primary-600 rounded-xl font-bold text-sm hover:bg-primary-50 transition">
-                                            Track Live
-                                        </button>
-                                    </Link>
+                        {/* Active Ride Banner (Conditional) */}
+                        {isRideActive ? (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-gradient-to-r from-primary-600 to-emerald-500 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden"
+                            >
+                                <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
+                                    <Car size={200} />
                                 </div>
+
+                                <div className="relative z-10">
+                                    <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase backdrop-blur-sm mb-4 inline-block">
+                                        Active Ride
+                                    </span>
+                                    <h2 className="text-3xl font-bold mb-2">Heading to Taramani</h2>
+                                    <p className="opacity-90 flex items-center gap-2 mb-6">
+                                        <MapPin size={16} /> Pickup in 15 mins
+                                    </p>
+
+                                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between border border-white/20">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary-600 font-bold text-lg">
+                                                PS
+                                            </div>
+                                            <div>
+                                                <div className="font-semibold">{role === 'passenger' ? 'Driven by Priya S.' : 'Passenger: Rahul M.'}</div>
+                                                <div className="text-sm opacity-80">{role === 'passenger' ? 'Trust Score: 98/100' : 'Payment Verified'}</div>
+                                            </div>
+                                        </div>
+                                        <Link to="/track/r1">
+                                            <button className="px-6 py-2 bg-white text-primary-600 rounded-xl font-bold text-sm hover:bg-primary-50 transition">
+                                                Track Live
+                                            </button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <div className="bg-white rounded-3xl p-10 text-center border-2 border-dashed border-slate-100">
+                                <Search size={48} className="mx-auto mb-4 text-slate-200" />
+                                <h3 className="text-lg font-bold text-slate-800 mb-1">No Active Rides</h3>
+                                <p className="text-slate-500 text-sm mb-6">You don't have any commutes scheduled for now.</p>
+                                <Link to="/search">
+                                    <button className="px-6 py-2.5 bg-primary-50 text-primary-600 rounded-xl font-bold text-sm hover:bg-primary-100 transition">
+                                        Find a Commute
+                                    </button>
+                                </Link>
                             </div>
-                        </motion.div>
+                        )}
 
                         {/* Recent Rides/Requests */}
                         <div>
@@ -103,8 +138,9 @@ const Dashboard = () => {
                                 <Link to="/search" className="text-sm text-primary-600 font-medium hover:underline">View All</Link>
                             </div>
                             <div className="space-y-4">
-                                <RideCard ride={{ ...mockActiveRide, status: 'completed', time: 'Yesterday, 05:00 PM' }} />
-                                <RideCard ride={{ ...mockActiveRide, id: 'r2', status: 'completed', startLocation: 'Adyar', endLocation: 'Velachery', time: 'Mon, 07:00 PM' }} />
+                                {mockRecentRides.map(ride => (
+                                    <RideCard key={ride.id} ride={ride} />
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -175,5 +211,6 @@ const Dashboard = () => {
         </>
     );
 };
+
 
 export default Dashboard;

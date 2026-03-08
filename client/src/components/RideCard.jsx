@@ -1,7 +1,37 @@
 import { MapPin, Clock, Zap, Building2, BrainCircuit } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const RideCard = ({ ride }) => {
+const RideCard = ({ ride, onBook }) => {
+    const getStatusButton = () => {
+        if (ride.status === 'available') {
+            return (
+                <button
+                    onClick={() => onBook && onBook(ride)}
+                    className="text-sm font-bold bg-primary-600 text-white px-4 py-1.5 rounded-lg hover:bg-primary-700 transition"
+                >
+                    Book Now
+                </button>
+            );
+        }
+        if (ride.status === 'active') {
+            return (
+                <Link to={`/track/${ride.id || 'r1'}`}>
+                    <button className="text-sm font-semibold text-primary-600 hover:text-primary-700 border border-primary-100 px-4 py-1.5 rounded-lg hover:bg-primary-50 transition">
+                        Track Live
+                    </button>
+                </Link>
+            );
+        }
+        return (
+            <Link to={`/track/${ride.id || 'r1'}`}>
+                <button className="text-sm font-medium text-slate-400 hover:text-slate-600 border border-slate-100 px-4 py-1.5 rounded-lg hover:bg-slate-50 transition">
+                    View Summary
+                </button>
+            </Link>
+        );
+    };
+
+
     return (
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition group relative overflow-hidden">
             {/* Decorative accent bar */}
@@ -54,14 +84,11 @@ const RideCard = ({ ride }) => {
                 <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
                     <Clock size={14} /> {ride.time}
                 </div>
-                <Link to={`/track/${ride.id || 'r1'}`}>
-                    <button className="text-sm font-semibold text-primary-600 hover:text-primary-700">
-                        View Details
-                    </button>
-                </Link>
+                {getStatusButton()}
             </div>
         </div>
     );
 };
+
 
 export default RideCard;
