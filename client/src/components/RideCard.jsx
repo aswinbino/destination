@@ -1,7 +1,7 @@
 import { MapPin, Clock, Zap, Building2, BrainCircuit } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const RideCard = ({ ride, onBook }) => {
+const RideCard = ({ ride, onBook, onAccept, onReject }) => {
     const getStatusButton = () => {
         if (ride.status === 'available') {
             return (
@@ -11,6 +11,24 @@ const RideCard = ({ ride, onBook }) => {
                 >
                     Book Now
                 </button>
+            );
+        }
+        if (ride.status === 'incoming') {
+            return (
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => onAccept && onAccept(ride)}
+                        className="text-sm font-bold bg-emerald-500 text-white px-4 py-1.5 rounded-lg hover:bg-emerald-600 transition"
+                    >
+                        Accept
+                    </button>
+                    <button
+                        onClick={() => onReject && onReject(ride)}
+                        className="text-sm font-medium bg-slate-50 text-slate-500 border border-slate-200 px-4 py-1.5 rounded-lg hover:bg-slate-100 transition"
+                    >
+                        Reject
+                    </button>
+                </div>
             );
         }
         if (ride.status === 'active') {
@@ -30,6 +48,7 @@ const RideCard = ({ ride, onBook }) => {
             </Link>
         );
     };
+
 
 
     return (

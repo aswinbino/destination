@@ -36,10 +36,33 @@ const mockRecentRides = [
     }
 ];
 
+const mockIncomingRequests = [
+    {
+        id: 'req1',
+        driver: { name: 'Siddharth V.', trustScore: 92, vehicle: 'Anna University student' },
+        status: 'incoming',
+        startLocation: 'Guindy Main Gate',
+        endLocation: 'Anna University Dept',
+        time: 'Today, 09:15 AM',
+        price: '₹15'
+    }
+];
+
 const Dashboard = () => {
     const [role, setRole] = useState('passenger');
     const [bookingOpen, setBookingOpen] = useState(false);
-    const [isRideActive, setIsRideActive] = useState(false); // Controlled by app state logic normally
+    const [isRideActive, setIsRideActive] = useState(false);
+    const [incomingRequests, setIncomingRequests] = useState(mockIncomingRequests);
+
+    const handleAccept = (ride) => {
+        alert(`Accepted ride from ${ride.driver.name}! Starting commute...`);
+        setIncomingRequests(prev => prev.filter(r => r.id !== ride.id));
+        setIsRideActive(true);
+    };
+
+    const handleReject = (ride) => {
+        setIncomingRequests(prev => prev.filter(r => r.id !== ride.id));
+    };
 
     // Animated CO2 Counter logic
     const count = useMotionValue(0);
@@ -57,15 +80,25 @@ const Dashboard = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-slate-900">Welcome, Rahul 👋</h1>
-                        <p className="text-slate-500 mt-1">Ready for your next commute?</p>
+                        <p className="text-slate-500 mt-1">
+                            {role === 'passenger' ? 'Ready for your next commute?' : 'Ready to share your commute?'}
+                        </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => setBookingOpen(true)}
-                            className="px-5 py-2.5 bg-primary-600 text-white rounded-xl font-semibold text-sm hover:bg-primary-700 transition shadow-md shadow-primary-500/30 flex items-center gap-2"
-                        >
-                            <Plus size={18} /> Book a Ride
-                        </button>
+                        {role === 'passenger' ? (
+                            <button
+                                onClick={() => setBookingOpen(true)}
+                                className="px-5 py-2.5 bg-primary-600 text-white rounded-xl font-semibold text-sm hover:bg-primary-700 transition shadow-md shadow-primary-500/30 flex items-center gap-2"
+                            >
+                                <Plus size={18} /> Book a Ride
+                            </button>
+                        ) : (
+                            <Link to="/post">
+                                <button className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-semibold text-sm hover:bg-emerald-700 transition shadow-md shadow-emerald-500/30 flex items-center gap-2">
+                                    <Car size={18} /> Post a Ride
+                                </button>
+                            </Link>
+                        )}
                         <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-100 flex">
                             <button onClick={() => setRole('passenger')} className={`px-5 py-2 rounded-lg font-medium transition-all text-sm ${role === 'passenger' ? 'bg-primary-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}>Passenger</button>
                             <button onClick={() => setRole('driver')} className={`px-5 py-2 rounded-lg font-medium transition-all text-sm ${role === 'driver' ? 'bg-primary-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}>Driver</button>
@@ -77,6 +110,48 @@ const Dashboard = () => {
 
                     {/* Main Content Area */}
                     <div className="lg:col-span-2 space-y-8">
+
+                        {role === 'driver' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+                                        <CreditCard size={24} />
+                                    </div>
+                                    <div>
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Today's Earnings</div>
+                                        <div className="text-2xl font-black text-slate-800">₹185</div>
+                                    </div>
+                                </div>
+                                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-2xl flex items-center justify-center">
+                                        <Users size={24} />
+                                    </div>
+                                    <div>
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Rides Shared</div>
+                                        <div className="text-2xl font-black text-slate-800">12</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {role === 'driver' && incomingRequests.length > 0 && (
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                                    Incoming Requests <span className="w-6 h-6 bg-emerald-100 text-emerald-700 text-xs rounded-full flex items-center justify-center">{incomingRequests.length}</span>
+                                </h3>
+                                <div className="space-y-4">
+                                    {incomingRequests.map(req => (
+                                        <RideCard
+                                            key={req.id}
+                                            ride={req}
+                                            onAccept={handleAccept}
+                                            onReject={handleReject}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
 
                         {/* Active Ride Banner (Conditional) */}
                         {isRideActive ? (
@@ -91,11 +166,11 @@ const Dashboard = () => {
 
                                 <div className="relative z-10">
                                     <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase backdrop-blur-sm mb-4 inline-block">
-                                        Active Ride
+                                        {role === 'passenger' ? 'Active Ride' : 'Ongoing Commute'}
                                     </span>
                                     <h2 className="text-3xl font-bold mb-2">Heading to Taramani</h2>
                                     <p className="opacity-90 flex items-center gap-2 mb-6">
-                                        <MapPin size={16} /> Pickup in 15 mins
+                                        <MapPin size={16} /> {role === 'passenger' ? 'Pickup in 15 mins' : 'Destination 4km away'}
                                     </p>
 
                                     <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between border border-white/20">
@@ -119,15 +194,22 @@ const Dashboard = () => {
                         ) : (
                             <div className="bg-white rounded-3xl p-10 text-center border-2 border-dashed border-slate-100">
                                 <Search size={48} className="mx-auto mb-4 text-slate-200" />
-                                <h3 className="text-lg font-bold text-slate-800 mb-1">No Active Rides</h3>
-                                <p className="text-slate-500 text-sm mb-6">You don't have any commutes scheduled for now.</p>
-                                <Link to="/search">
+                                <h3 className="text-lg font-bold text-slate-800 mb-1">
+                                    {role === 'passenger' ? 'No Active Rides' : 'No Active Offers'}
+                                </h3>
+                                <p className="text-slate-500 text-sm mb-6">
+                                    {role === 'passenger'
+                                        ? "You don't have any commutes scheduled for now."
+                                        : "You haven't posted any rides for today yet."}
+                                </p>
+                                <Link to={role === 'passenger' ? "/search" : "/post"}>
                                     <button className="px-6 py-2.5 bg-primary-50 text-primary-600 rounded-xl font-bold text-sm hover:bg-primary-100 transition">
-                                        Find a Commute
+                                        {role === 'passenger' ? 'Find a Commute' : 'Post a Ride'}
                                     </button>
                                 </Link>
                             </div>
                         )}
+
 
                         {/* Recent Rides/Requests */}
                         <div>

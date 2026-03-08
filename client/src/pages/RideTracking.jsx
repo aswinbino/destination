@@ -8,38 +8,115 @@ import ChatBot from '../components/ChatBot';
 const RideTracking = () => {
     const { rideId } = useParams();
     const [eta, setEta] = useState(15);
-    // BUG FIX: SOS was defaulting to true in screenshot, now correctly false.
     const [sosActive, setSosActive] = useState(false);
     const [sosConfirmed, setSosConfirmed] = useState(false);
     const [alertMsg, setAlertMsg] = useState('');
 
-    // Simulating real-time updates
+    // Check if it's a history/completed ride (mock logic)
+    const isCompleted = rideId?.startsWith('h');
+
+    // Simulating real-time updates for live rides only
     useEffect(() => {
+        if (isCompleted) return;
+
         const timer = setInterval(() => {
             setEta(prev => prev > 1 ? prev - 1 : 0);
         }, 60000);
 
-        // Simulate AI Route Deviation alert after 12 seconds (demo)
         const alertTimer = setTimeout(() => {
             setAlertMsg('⚠️ AI Alert: Route deviation detected! Driver is 600m off route. Are you safe?');
         }, 12000);
 
         return () => { clearInterval(timer); clearTimeout(alertTimer); };
-    }, [rideId]);
+    }, [rideId, isCompleted]);
 
-    const handleSOS = () => {
-        if (!sosConfirmed) {
-            setSosConfirmed(true); // Show confirmation dialog
-        } else {
-            setSosActive(true);
-            setSosConfirmed(false);
-        }
-    };
+    if (isCompleted) {
+        return (
+            <div className="min-h-[calc(100vh-72px)] bg-slate-50 py-12 px-4">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="max-w-xl mx-auto bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden"
+                >
+                    <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white text-center relative">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500 rounded-full blur-3xl opacity-20 -mr-16 -mt-16"></div>
+                        <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+                            <CheckCircle size={40} className="text-emerald-400" />
+                        </div>
+                        <h2 className="text-3xl font-black mb-1">Ride Summary</h2>
+                        <p className="text-slate-400 text-sm font-medium uppercase tracking-widest">Completed Yesterday, 05:45 PM</p>
+                    </div>
+
+                    <div className="p-8 space-y-8">
+                        {/* Driver & Impact Section */}
+                        <div className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center text-white font-bold text-lg">A</div>
+                                <div>
+                                    <h4 className="font-bold text-slate-800">Arjun Kumar</h4>
+                                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                                        <Star size={12} className="fill-amber-400 text-amber-400" /> 4.9 • Tata Nexon EV
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Impact</div>
+                                <div className="text-lg font-black text-emerald-600">🌿 240g CO2</div>
+                            </div>
+                        </div>
+
+                        {/* Route Summary */}
+                        <div className="relative pl-8 space-y-6">
+                            <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-slate-200"></div>
+                            <div className="relative">
+                                <div className="absolute -left-7 top-1 w-4 h-4 rounded-full bg-slate-300 border-4 border-white"></div>
+                                <div>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Started from</p>
+                                    <p className="font-semibold text-slate-800">Guindy (near Anna Univ)</p>
+                                </div>
+                            </div>
+                            <div className="relative">
+                                <div className="absolute -left-7 top-1 w-4 h-4 rounded-full bg-primary-500 border-4 border-white"></div>
+                                <div>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Arrived at</p>
+                                    <p className="font-semibold text-slate-800">Taramani Tech Park</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Payment Summary */}
+                        <div className="pt-6 border-t border-slate-100">
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="text-slate-500 font-medium">Total Fare</span>
+                                <span className="text-2xl font-black text-slate-900">₹45.00</span>
+                            </div>
+                            <div className="bg-primary-50/50 p-4 rounded-2xl mb-8 flex items-center gap-3">
+                                <ShieldCheck className="text-primary-600" size={24} />
+                                <p className="text-xs font-medium text-primary-700 leading-relaxed">
+                                    This payment helped Arjun save 240g of CO2 today and contributed to our goal of 500kg for Chennai.
+                                </p>
+                            </div>
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => window.history.back()}
+                                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-black transition"
+                            >
+                                Back to Dashboard
+                            </motion.button>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        );
+    }
 
     const etaTime = new Date(Date.now() + eta * 60000);
 
     return (
         <div className="h-[calc(100vh-72px)] flex flex-col md:flex-row bg-slate-100 relative">
+            {/* Same Live Tracking UI as before... */}
+            {/* ... keeping the rest of the existing live tracking implementation ... */}
 
             {/* Map Area (Mock) */}
             <div className="flex-grow bg-slate-800 relative overflow-hidden h-64 md:h-auto">
