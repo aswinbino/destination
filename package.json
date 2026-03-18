@@ -1,4 +1,11 @@
 {
+  "name": "destination-root",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "app-next"
+  ],
   "scripts": {
     "setup": "npm install && cd client && npm install && cd ../server && npm install && cd ../app-next && npm install",
     "client:build": "cd client && npm run build",
