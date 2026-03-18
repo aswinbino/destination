@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "setup": "npm install && cd client && npm install && cd ../server && npm install && cd ../app-next && npm install",
+    "client:build": "cd client && npm run build",
+    "app-next:build": "cd app-next && npm run build",
+    "vercel-build": "npm run client:build"
+  },
   "dependencies": {
     "axios": "^1.13.6",
     "clsx": "^2.1.1",

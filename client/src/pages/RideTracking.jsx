@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Navigation2, Phone, AlertTriangle, ShieldAlert, Mic, Zap, Star } from 'lucide-react';
+import { Navigation2, Phone, AlertTriangle, ShieldAlert, Mic, Zap, Star, CheckCircle, ShieldCheck } from 'lucide-react';
 import ChatBot from '../components/ChatBot';
 
 const RideTracking = () => {
@@ -11,6 +11,14 @@ const RideTracking = () => {
     const [sosActive, setSosActive] = useState(false);
     const [sosConfirmed, setSosConfirmed] = useState(false);
     const [alertMsg, setAlertMsg] = useState('');
+
+    const handleSOS = () => {
+        setSosActive(true);
+        setSosConfirmed(false);
+        setAlertMsg('');
+        // In a real app, this would trigger a socket event or API call
+        console.log("🚨 SOS Triggered!");
+    };
 
     // Check if it's a history/completed ride (mock logic)
     const isCompleted = rideId?.startsWith('h');

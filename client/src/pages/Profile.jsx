@@ -19,6 +19,11 @@ const Profile = () => {
     });
 
     const [formData, setFormData] = useState({ ...user });
+    const [profileColor, setProfileColor] = useState('bg-primary-600');
+
+    const colors = [
+        'bg-primary-600', 'bg-emerald-600', 'bg-rose-600', 'bg-amber-600', 'bg-indigo-600'
+    ];
 
     const handleUpdate = (e) => {
         e.preventDefault();
@@ -33,12 +38,24 @@ const Profile = () => {
                 <div className="h-48 bg-gradient-to-r from-primary-600 to-emerald-500 rounded-3xl opacity-20 absolute inset-0 -z-10 blur-2xl"></div>
                 <div className="flex flex-col md:flex-row items-center gap-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
                     <div className="relative group">
-                        <div className="w-32 h-32 bg-primary-600 rounded-full flex items-center justify-center text-white text-4xl font-bold border-4 border-[#0a0a0c] shadow-2xl">
+                        <div className={`w-32 h-32 ${profileColor} rounded-full flex items-center justify-center text-white text-4xl font-bold border-4 border-[#0a0a0c] shadow-2xl transition-colors duration-500`}>
                             {user.name.charAt(0)}
                         </div>
-                        <button className="absolute bottom-1 right-1 bg-white text-slate-900 p-2 rounded-full shadow-lg hover:scale-110 transition cursor-pointer">
-                            <Camera size={18} />
-                        </button>
+                        {isEditing ? (
+                            <div className="absolute -bottom-2 -left-2 right-2 flex justify-center gap-1 bg-white/90 p-1.5 rounded-full shadow-lg border border-slate-200 backdrop-blur-sm scale-90">
+                                {colors.map(c => (
+                                    <button
+                                        key={c}
+                                        onClick={() => setProfileColor(c)}
+                                        className={`w-4 h-4 rounded-full ${c} ${profileColor === c ? 'ring-2 ring-offset-1 ring-slate-400' : ''} transition-all`}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <button onClick={() => setIsEditing(true)} className="absolute bottom-1 right-1 bg-white text-slate-900 p-2 rounded-full shadow-lg hover:scale-110 transition cursor-pointer">
+                                <Camera size={18} />
+                            </button>
+                        )}
                     </div>
 
                     <div className="flex-grow text-center md:text-left">
@@ -105,18 +122,54 @@ const Profile = () => {
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">About Bio</label>
                                     <textarea
-                                        rows="3"
+                                        rows="2"
                                         value={formData.bio}
                                         onChange={e => setFormData({ ...formData, bio: e.target.value })}
                                         className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition"
                                     ></textarea>
                                 </div>
-                                <div className="flex gap-3">
+
+                                <div className="pt-4 border-t border-slate-100">
+                                    <h4 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <Car size={16} className="text-primary-600" /> Vehicle Information
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Model</label>
+                                            <input
+                                                type="text"
+                                                value={formData.vehicle.model}
+                                                onChange={e => setFormData({ ...formData, vehicle: { ...formData.vehicle, model: e.target.value } })}
+                                                className="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Exterior</label>
+                                            <input
+                                                type="text"
+                                                value={formData.vehicle.color}
+                                                onChange={e => setFormData({ ...formData, vehicle: { ...formData.vehicle, color: e.target.value } })}
+                                                className="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Plate Number</label>
+                                            <input
+                                                type="text"
+                                                value={formData.vehicle.number}
+                                                onChange={e => setFormData({ ...formData, vehicle: { ...formData.vehicle, number: e.target.value } })}
+                                                className="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-3 pt-2">
                                     <button
                                         type="submit"
                                         className="flex-1 py-3 bg-primary-600 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 hover:bg-primary-700 transition"
                                     >
-                                        Save Changes
+                                        Save All Changes
                                     </button>
                                     <button
                                         type="button"
@@ -139,47 +192,55 @@ const Profile = () => {
                                         <div className="text-slate-800 font-medium">May 2024</div>
                                     </div>
                                 </div>
-                                <div>
-                                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Bio</div>
-                                    <p className="text-slate-600 text-sm leading-relaxed">{user.bio}</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Bio</div>
+                                        <p className="text-slate-600 text-sm leading-relaxed">{user.bio}</p>
+                                    </div>
+                                    <div>
+                                        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Email</div>
+                                        <p className="text-slate-600 text-sm">{user.email}</p>
+                                    </div>
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    {/* Vehicle Details (For Driver Mode) */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 relative overflow-hidden"
-                    >
-                        <div className="absolute right-0 top-0 opacity-5 -translate-y-1/4 translate-x-1/4">
-                            <Car size={160} />
-                        </div>
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
-                                <Car size={24} />
+                    {/* Vehicle Details display when NOT editing */}
+                    {!isEditing && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 relative overflow-hidden"
+                        >
+                            <div className="absolute right-0 top-0 opacity-5 -translate-y-1/4 translate-x-1/4">
+                                <Car size={160} />
                             </div>
-                            <h3 className="font-bold text-xl text-slate-800">Vehicle Information</h3>
-                        </div>
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                                    <Car size={24} />
+                                </div>
+                                <h3 className="font-bold text-xl text-slate-800">Vehicle Information</h3>
+                            </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Model</div>
-                                <div className="font-bold text-slate-800 flex items-center gap-1">
-                                    {user.vehicle.model} <Zap size={12} className="text-amber-500 fill-amber-500" />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Model</div>
+                                    <div className="font-bold text-slate-800 flex items-center gap-1">
+                                        {user.vehicle.model} <Zap size={12} className="text-amber-500 fill-amber-500" />
+                                    </div>
+                                </div>
+                                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Exterior</div>
+                                    <div className="font-bold text-slate-800">{user.vehicle.color}</div>
+                                </div>
+                                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Plate Number</div>
+                                    <div className="font-bold text-slate-800">{user.vehicle.number}</div>
                                 </div>
                             </div>
-                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Exterior</div>
-                                <div className="font-bold text-slate-800">{user.vehicle.color}</div>
-                            </div>
-                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Plate Number</div>
-                                <div className="font-bold text-slate-800">{user.vehicle.number}</div>
-                            </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+                    )}
                 </div>
 
                 {/* Account Activity / Badges */}
